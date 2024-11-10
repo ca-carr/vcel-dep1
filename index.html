@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Token Purchase dApp</title>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+        #connectButton, #purchaseButton {
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #status {
+            font-size: 14px;
+            color: #333;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Token Purchase dApp</h1>
+    <button id="connectButton">Connect MetaMask</button>
+    <button id="purchaseButton" disabled>Purchase Tokens</button>
+    <div id="status">Please connect MetaMask to continue.</div>
+
+    <script>
+        let provider;
+        let signer;
+        let contract;
+        const contractAddress = "0xYourContractAddress"; // Replace with your contract address
+        const contractABI = [
+            // Replace with your contract's ABI
+        ];
+
+        document.getElementById("connectButton").addEventListener("click", async () => {
+            // Check if MetaMask is installed
+            if (typeof window.ethereum !== "undefined") {
+                try {
+                    // Connect to MetaMask
+                    provider = new ethers.providers.Web3Provider(window.ethereum);
+                    await provider.send("eth_requestAccounts", []);
+                    signer = provider.getSigner();
+                    const userAddress = await signer.getAddress();
+                    document.getElementById("status").innerText = `Connected as ${userAddress}`;
+
+                    // Enable purchase button after connection
+                    document.getElementById("purchaseButton").disabled = false;
+
+                    // Initialize contract
+                    contract = new ethers.Contract(contractAddress, contractABI, signer);
+                } catch (error) {
+                    console.error("Error connecting to MetaMask:", error);
+                    document.getElementById("status").innerText = "Connection failed. Try again.";
+                }
+            } else {
+                alert("MetaMask is not installed. Please install MetaMask to continue.");
+            }
+        });
+
+        document.getElementById("purchaseButton").addEventListener("click", async () => {
+            if (contract) {
+                try {
+                    // Execute purchase function on the smart contract
+                    const transaction = await contract.purchaseTokens({
+                        value: ethers.utils.parseEther("0.1") // Adjust token purchase amount as needed
+                    });
+                    document.getElementById("status").innerText = "Transaction submitted. Waiting for confirmation...";
+                    
+                    // Wait for transaction to be confirmed
+                    await transaction.wait();
+                    document.getElementById("status").innerText = "Token purchase successful!";
+                } catch (error) {
+                    console.error("Error purchasing tokens:", error);
+                    document.getElementById("status").innerText = "Token purchase failed. Please try again.";
+                }
+            }
+        });
+    </script>
+</body>
+</html>
