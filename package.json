@@ -1,16 +1,19 @@
 {
   "name": "vcel-dep1",
   "version": "1.0.0",
-  "description": "",
+  "description": "A Web3 dApp with MetaMask and smart contract interaction, deployable on Vercel.",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
+    "build": "echo 'No build step needed for static HTML/JS files'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["web3", "dapp", "metamask", "ethereum", "express"],
+  "author": "Your Name",
   "license": "ISC",
   "dependencies": {
     "ethers": "^6.13.4",
+    "express": "^4.18.2",
     "web3": "^4.15.0"
   }
 }
